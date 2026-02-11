@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "ui.shadcn.com", pathname: "/**" },
       { protocol: "https", hostname: "github.com", pathname: "/**" },
       { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
+      { protocol: "https", hostname: "cdn.sanity.io", pathname: "/**" },
     ],
   },
   // Force module resolution from this project so tailwindcss and other deps
