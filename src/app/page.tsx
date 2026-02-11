@@ -1,6 +1,4 @@
-import { LpNavbar3 } from "@/components/pro-blocks/landing-page/lp-navbars/lp-navbar-3";
 import Link from "next/link";
-import { Footer8 } from "@/components/pro-blocks/landing-page/footers/footer-8";
 
 
 export default function Page() {
