@@ -7,6 +7,14 @@ import { BLOG_POST_QUERY } from "@/sanity/lib/queries";
 
 const PLACEHOLDER_IMAGE = "https://ui.shadcn.com/placeholder.svg";
 
+/** Force dynamic rendering so build does not run this page (avoids "Failed to collect page data") */
+export const dynamic = "force-dynamic";
+
+/** No static paths — all blog posts are rendered on demand */
+export async function generateStaticParams() {
+  return [];
+}
+
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleDateString("en-US", {
@@ -25,7 +33,24 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await client.fetch(BLOG_POST_QUERY, { slug });
+  if (!slug || typeof slug !== "string") {
+    notFound();
+  }
+
+  let post: {
+    title?: string;
+    publishedAt?: string;
+    excerptText?: string | null;
+    body?: unknown;
+    featuredImage?: { asset?: { url?: string } | null; alt?: string | null };
+    author?: { name?: string };
+    authorName?: string | null;
+  } | null = null;
+  try {
+    post = await client.fetch(BLOG_POST_QUERY, { slug });
+  } catch {
+    notFound();
+  }
 
   if (!post) {
     notFound();
@@ -33,7 +58,7 @@ export default async function BlogPostPage({
 
   const imageUrl =
     post.featuredImage?.asset?.url ?? PLACEHOLDER_IMAGE;
-  const imageAlt = post.featuredImage?.alt ?? post.title;
+  const imageAlt = post.featuredImage?.alt ?? post.title ?? "Post image";
 
   return (
     <article className="mx-auto max-w-3xl px-6 py-12">
@@ -45,11 +70,13 @@ export default async function BlogPostPage({
       </Link>
 
       <header className="mb-8">
-        <p className="text-muted-foreground text-sm">
-          {formatDate(post.publishedAt)}
-        </p>
+        {post.publishedAt && (
+          <p className="text-muted-foreground text-sm">
+            {formatDate(post.publishedAt)}
+          </p>
+        )}
         <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
-          {post.title}
+          {post.title ?? "Untitled"}
         </h1>
         {(post.author?.name ?? post.authorName) && (
           <p className="text-muted-foreground mt-2 text-sm">
@@ -77,10 +104,10 @@ export default async function BlogPostPage({
         </p>
       )}
 
-      {post.body && post.body.length > 0 && (
+      {Array.isArray(post.body) && post.body.length > 0 && (
         <div className="prose prose-neutral dark:prose-invert max-w-none">
           <PortableText
-            value={post.body}
+            value={post.body as import("@portabletext/types").PortableTextBlock[]}
             components={{
               block: {
                 h2: ({ children }) => (
