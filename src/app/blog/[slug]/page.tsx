@@ -37,6 +37,12 @@ export default async function BlogPostPage({
     notFound();
   }
 
+  // Skip Sanity fetch during build when env is not set (e.g. Vercel build without env vars)
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  if (!projectId || projectId === "your_project_id") {
+    notFound();
+  }
+
   let post: {
     title?: string;
     publishedAt?: string;
