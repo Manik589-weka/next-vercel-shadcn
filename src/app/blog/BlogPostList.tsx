@@ -107,7 +107,7 @@ export function BlogPostList({
                           alt={imageAlt}
                           fill
                           className="object-cover transition-transform duration-200 group-hover:scale-105"
-                          sizes="(max-width: 768px) 100vw, 200px"
+                          sizes="(max-width: 768px) 100vw, 200px "
                         />
                       </AspectRatio>
                     </div>
