@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { draftMode } from "next/headers";
+import { VisualEditing } from "next-sanity";
 import "./globals.css";
 import { Footer8 } from "@/components/pro-blocks/landing-page/footers/footer-8";
 import { LpNavbar3 } from "@/components/pro-blocks/landing-page/lp-navbars/lp-navbar-3";
@@ -21,11 +23,12 @@ export const metadata: Metadata = {
   description: "WEKA Sanity + Next.js",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const draft = await draftMode();
   return (
     <html lang="en" className={inter.variable}>
       <body
@@ -34,6 +37,7 @@ export default function RootLayout({
         <LpNavbar3 />
         <main className="flex-1">{children}</main>
         <Footer8 />
+        {draft.isEnabled && <VisualEditing />}
       </body>
     </html>
   );
